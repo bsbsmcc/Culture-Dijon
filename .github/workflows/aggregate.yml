@@ -52,8 +52,25 @@ jobs:
             python "$s" || echo "Scraper $s failed but we continue"
           done
 
+      - name: Scraper outputs
+        run: |
+          echo "=== docs/ contents after scrapers ==="
+          ls -la docs/ || echo "(empty)"
+          echo "=== ICS event counts ==="
+          for f in docs/*.ics; do
+            count=$(grep -c "^BEGIN:VEVENT" "$f" 2>/dev/null || echo 0)
+            echo "$f : $count events"
+          done
+
       - name: Run aggregator
-        run: python aggregate.py
+        run: python -u aggregate.py 2>&1
+
+      - name: Check combined.ics
+        run: |
+          echo "=== combined.ics size ==="
+          wc -c docs/combined.ics
+          echo "=== VEVENT count ==="
+          grep -c "^BEGIN:VEVENT" docs/combined.ics || echo "0 VEVENTs"
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
