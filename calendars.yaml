@@ -9,10 +9,6 @@
 #     * url    : URL du flux ICS (https:// ou webcal://) OU chemin
 #                local (ex. "docs/la-vapeur.ics") généré par un scraper
 #
-# ⚠️  URLs marquées "# TODO: vérifier" = à confirmer en inspectant
-#     le site ou en cherchant l'ID OpenAgenda correspondant.
-#     Pattern OpenAgenda :
-#     https://openagenda.com/agendas/<ID>/events.v2.ics?relative[0]=current&relative[1]=upcoming
 # ====================================================================
 
 name: "Dijon Culture — Calendrier combiné"
@@ -21,38 +17,7 @@ timezone: "Europe/Paris"
 calendars:
 
   # ================================================================
-  # FLUX ICS DIRECTS — priorité haute
-  # ================================================================
-
-  - name: "office-tourisme-dijon"
-    # Office de Tourisme Dijon (visitdijon.com) — probablement OpenAgenda
-    # TODO: inspecter https://www.visitdijon.com/agenda et chercher l'ID OpenAgenda
-    # Remplacer XXXXXXX par l'identifiant numérique trouvé
-    url: "https://openagenda.com/agendas/XXXXXXX/events.v2.ics?relative%5B0%5D=current&relative%5B1%5D=upcoming"
-
-  - name: "agenda-ville-dijon"
-    # Agenda officiel Ville de Dijon (dijon.fr/agenda)
-    # TODO: vérifier sur https://www.dijon.fr/agenda si un bouton "ICS" ou
-    # "Exporter" est disponible. Peut aussi être un flux OpenAgenda.
-    url: "https://openagenda.com/agendas/YYYYYYY/events.v2.ics?relative%5B0%5D=current&relative%5B1%5D=upcoming"
-
-  - name: "opera-dijon"
-    prefix: "OPÉRA"
-    # Opéra de Dijon (opera-dijon.fr) — probablement OpenAgenda ou widget billetterie
-    # TODO: inspecter le code source de https://www.opera-dijon.fr/agenda
-    # et chercher une URL openagenda.com ou un lien "Exporter en ICS"
-    url: "https://openagenda.com/agendas/ZZZZZZZ/events.v2.ics?relative%5B0%5D=current&relative%5B1%5D=upcoming"
-
-  - name: "auditorium-dijon"
-    prefix: "AUDITORIUM"
-    # Auditorium de Dijon / Orchestre Dijon Bourgogne
-    # TODO: vérifier sur https://www.auditorium-dijon.fr/saison/agenda
-    # Certains auditoriums publient un flux ICS natif (chercher "ical" ou "ics" dans le HTML)
-    url: "https://www.auditorium-dijon.fr/calendar/export.ics"
-
-  # ================================================================
-  # SOURCES SCRAPÉES — priorité moyenne
-  # Chaque scraper produit un .ics dans docs/ consommé ici
+  # SOURCES SCRAPÉES — priorité haute
   # ================================================================
 
   - name: "la-vapeur"
@@ -87,14 +52,44 @@ calendars:
     prefix: "MBA"
     url: "docs/mba-dijon.ics"
 
+  - name: "zutique"
+    prefix: "ZUTIQUE"
+    url: "docs/zutique.ics"
+
+  - name: "golden-coast"
+    prefix: "GOLDEN COAST"
+    url: "docs/golden-coast.ics"
+
+  - name: "la-karriere"
+    prefix: "KARRIÈRE"
+    url: "docs/la-karriere.ics"
+
+  - name: "drac-bfc"
+    prefix: "DRAC BFC"
+    url: "docs/drac-bfc.ics"
+
+  - name: "dri-dijon"
+    prefix: "INTERNATIONAL"
+    url: "docs/dri-dijon.ics"
+
+  - name: "hautes-cotes"
+    prefix: "HAUTES CÔTES"
+    url: "docs/hautes-cotes.ics"
+
   # ================================================================
-  # HORS PÉRIMÈTRE (conservés pour référence, désactivés)
+  # FLUX ICS DIRECTS — à activer quand les IDs sont connus
   # ================================================================
 
-  # Zénith de Dijon : agenda Ticketmaster, pas d'ICS public
-  # - name: "zenith-dijon"
-  #   url: ""
+  # - name: "office-tourisme-dijon"
+  #   url: "https://openagenda.com/agendas/XXXXXXX/events.v2.ics?relative%5B0%5D=current&relative%5B1%5D=upcoming"
 
-  # Pathé Les Grésilles : multiplex, pas d'ICS public
-  # - name: "pathe-grésilles"
-  #   url: ""
+  # - name: "agenda-ville-dijon"
+  #   url: "https://openagenda.com/agendas/YYYYYYY/events.v2.ics?relative%5B0%5D=current&relative%5B1%5D=upcoming"
+
+  # - name: "opera-dijon"
+  #   prefix: "OPÉRA"
+  #   url: "https://openagenda.com/agendas/ZZZZZZZ/events.v2.ics?relative%5B0%5D=current&relative%5B1%5D=upcoming"
+
+  # - name: "auditorium-dijon"
+  #   prefix: "AUDITORIUM"
+  #   url: "https://www.auditorium-dijon.fr/calendar/export.ics"
