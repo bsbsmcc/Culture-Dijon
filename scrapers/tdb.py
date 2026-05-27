@@ -32,7 +32,7 @@ from bs4 import BeautifulSoup
 BASE_URL    = "https://www.tdb-cdn.com"
 WP_API_URL  = BASE_URL + "/wp-json/tribe/events/v1/events?per_page=50&page={page}"
 WP_API_V2   = BASE_URL + "/wp-json/wp/v2/spectacle?per_page=100&_fields=id,title,slug,link,acf"
-PROG_URLS   = [BASE_URL + "/saison", BASE_URL + "/spectacles", BASE_URL + "/programme"]
+PROG_URLS   = [BASE_URL + "/la-saison", BASE_URL + "/spectacles", BASE_URL + "/programme", BASE_URL + "/saison"]
 OUTPUT_PATH = Path(__file__).resolve().parent.parent / "docs" / "tdb.ics"
 TIMEOUT     = 30
 USER_AGENT  = "Mozilla/5.0 (compatible; ICS-Aggregator/1.0)"
@@ -105,7 +105,6 @@ def try_html(session: requests.Session) -> list[dict]:
 
         soup = BeautifulSoup(r.text, "html.parser")
 
-        # Balises <time datetime="YYYY-MM-DD">
         for time_el in soup.find_all("time", {"datetime": True}):
             dt_str = time_el.get("datetime","").strip()
             m = re.match(r"^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2}))?", dt_str)
