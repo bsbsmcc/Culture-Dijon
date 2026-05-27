@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Scraper Zutique Productions (Dijon)
-Drupal 7 site — agenda à /fr/agenda
+Site zutique.com — agenda à /agenda
 Dates en texte français : "Vendredi 3 Avril 2026 à 18h30 - Dijon"
 Sortie : docs/zutique.ics
 """
@@ -13,7 +13,7 @@ import requests
 from bs4 import BeautifulSoup
 
 BASE_URL    = "https://www.zutique.com"
-AGENDA_URL  = BASE_URL + "/fr/agenda"
+AGENDA_URL  = BASE_URL + "/agenda"
 OUTPUT_PATH = Path(__file__).resolve().parent.parent / "docs" / "zutique.ics"
 TIMEOUT     = 30
 USER_AGENT  = "Mozilla/5.0 (compatible; ICS-Aggregator/1.0)"
@@ -43,7 +43,7 @@ def _add_day(y,m,d):
 
 def _parse_french_date(text):
     t = _norm(text)
-    m = re.search(r"(\d{1,2})\s+([a-zéûùàâêîôè]+)\s+(\d{4})(?:\s+a\s+(\d{1,2})h(\d{0,2}))?",t)
+    m = re.search(r"(\d{1,2})\s+([a-z]+)\s+(\d{4})(?:\s+a\s+(\d{1,2})h(\d{0,2}))?",t)
     if not m: return None
     day=int(m.group(1)); mon_s=_norm(m.group(2)); year=int(m.group(3))
     month=MOIS.get(mon_s)
@@ -54,13 +54,15 @@ def _parse_french_date(text):
 
 def scrape(session):
     print(f"  GET {AGENDA_URL}",file=sys.stderr)
-    r=session.get(AGENDA_URL,timeout=TIMEOUT); r.raise_for_status()
+    try:
+        r=session.get(AGENDA_URL,timeout=TIMEOUT); r.raise_for_status()
+    except Exception as exc:
+        print(f"  \u26a0\ufe0f  {exc}",file=sys.stderr)
+        return []
     soup=BeautifulSoup(r.text,"html.parser")
     events=[]
-    # Drupal 7 : blocs views-row, ou éléments article
     candidates = soup.find_all(["article","div"],class_=re.compile(r"views-row|event|evenement|agenda-item"))
     if not candidates:
-        # Fallback : cherche les balises <time> directement
         candidates = [el.find_parent(["article","div","li"]) or el for el in soup.find_all("time",{"datetime":True})]
     for card in candidates:
         if card is None: continue
@@ -103,7 +105,7 @@ def build_ics(events):
     now_stamp=datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     lines=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//zutique-scraper//EN",
            "CALSCALE:GREGORIAN","METHOD:PUBLISH",
-           "X-WR-CALNAME:Zutique Productions – Agenda","X-WR-TIMEZONE:Europe/Paris"]
+           "X-WR-CALNAME:Zutique Productions \u2013 Agenda","X-WR-TIMEZONE:Europe/Paris"]
     for i,ev in enumerate(events):
         uid=f"zutique-{i}-{ev['year']}{ev['month']:02d}{ev['day']:02d}@zutique.com"
         if ev["hour"] is None:
@@ -128,11 +130,12 @@ def main():
     session=requests.Session(); session.headers["User-Agent"]=USER_AGENT
     print("=== Zutique Productions ===",file=sys.stderr)
     events=scrape(session)
-    print(f"  Événements : {len(events)}",file=sys.stderr)
+    print(f"  \u00c9v\u00e9nements : {len(events)}",file=sys.stderr)
     lines=build_ics(events)
     OUTPUT_PATH.parent.mkdir(parents=True,exist_ok=True)
     OUTPUT_PATH.write_text("\r\n".join(lines),encoding="utf-8")
-    print(f"  → {OUTPUT_PATH}",file=sys.stderr)
+    print(f"  \u2192 {OUTPUT_PATH}",file=sys.stderr)
     return 0
 
 if __name__=="__main__": sys.exit(main())
+é
